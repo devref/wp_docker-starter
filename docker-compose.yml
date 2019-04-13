@@ -1,0 +1,53 @@
+version: '3.1'
+
+services:
+
+  ### DATABASE ###
+  database_container:
+    container_name: database_container
+    environment:
+      MYSQL_ROOT_PASSWORD: $WORDPRESS_DB_PASSWORD
+      MYSQL_DATABASE: $WORDPRESS_DB_NAME
+      MYSQL_PASSWORD: $WORDPRESS_DB_PASSWORD
+      MYSQL_USER: $WORDPRESS_DB_USER
+      MYSQL_ROOT_PASSWORD: $WORDPRESS_DB_PASSWORD
+    image: mariadb
+    ports:
+      - 3307:3306
+    restart: always
+    volumes:
+      - database_container_data:/var/lib/mysql
+
+  ### PHP MY ADMIN ###
+  phpmyadmin_container:
+    container_name: phpmyadmin_container
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - 8081:80
+    links:
+      - database_container
+    restart: always
+    environment:
+      PMA_PORT: 3306
+      PMA_HOST: database_container
+      MYSQL_USER: $WORDPRESS_DB_USER
+      MYSQL_ROOT_PASSWORD: $WORDPRESS_DB_PASSWORD
+  
+  wordpress_container:
+    command: bash -c 'apache2-foreground'
+    container_name: wordpress_container
+    image: wordpress
+    depends_on:
+      - database_container
+    env_file: ./.env
+    ports:
+      - 8080:80
+    restart: always
+    volumes:
+      - ./wordpress:/var/www/html
+
+### VOLUMES/PRESISTENT DATA ###
+volumes:
+  database_container_data:
+  wordpress:
+  

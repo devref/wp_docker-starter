@@ -1,0 +1,17 @@
+{
+  "name": "wp-starter",
+  "version": "1.0.0",
+  "description": "",
+  "author": "Jamey Gleason",
+  "license": "TBD",
+  "scripts": {
+    "start": "docker-compose up",
+    "exportdb": "docker exec -it database_container /usr/bin/mysqldump -u root -pYourpassword wp_starter > database/wp_starter.sql",
+    "importdb": "docker exec -i database_container /usr/bin/mysql -u root -pYourpassword wp_starter < database/wp_starter.sql",
+    "reset": "npm run nuke-wp && npm run nuke-docker",
+    "nuke-wp": "rm -rf wordpress/wp-config.php",
+    "nuke-docker": "npm run nuke-containers & npm run nuke-volumes",
+    "nuke-containers": "docker container rm wordpress_container & docker container rm database_container & docker container rm phpmyadmin_container",
+    "nuke-volumes": "docker volume rm wp_docker-starter_database_container_data & docker volume rm wp_docker-starter_wordpress"
+  }
+}
